@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "rst-extract"
+version = "0.1.0"
+description = "A simple package for extracting python code from rst documents."
+authors = ["Teal <teal.dillon@gmail.com>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+structlog = "^24.1.0"
+rich = "^13.7.1"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.3"
+pre-commit = "^3.7.0"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.2.0"
+
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.3.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
