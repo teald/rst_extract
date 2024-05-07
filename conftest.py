@@ -10,16 +10,16 @@ import pytest
 @pytest.fixture
 def test_file_dir() -> str:
     """Return the directory of the test files."""
-    return join(os.path.dirname(__file__), "tests/files")
+    return join(os.path.dirname(__file__), 'tests/files')
 
 
 @pytest.fixture
 def empty_rst(tmpdir) -> str:
     """Create an empty rst file."""
-    rst_file = join(tmpdir, "empty.rst")
+    rst_file = join(tmpdir, 'empty.rst')
 
-    with open(rst_file, "w") as f:
-        f.write("")
+    with open(rst_file, 'w') as f:
+        f.write('')
 
     return rst_file
 
@@ -27,7 +27,7 @@ def empty_rst(tmpdir) -> str:
 @pytest.fixture
 def code_only_rst(tmpdir, test_file_dir) -> str:
     """Create an rst file with only code."""
-    file_name = R"only_code.rst"
+    file_name = R'only_code.rst'
     source_path = join(test_file_dir, file_name)
 
     temporary_file_path = join(tmpdir, file_name)

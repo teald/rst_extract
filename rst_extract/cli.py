@@ -8,12 +8,13 @@ To-do
 
 import click
 
-MAGNIFYING_GLASS = "\U0001f50d"
+MAGNIFYING_GLASS = '\U0001f50d'
+EXCLAMATION_MARK = '\U00002757'
 
 
 @click.command()
 @click.argument(
-    "filename",
+    'filename',
     nargs=-1,
     type=click.Path(exists=True),
 )
@@ -22,9 +23,9 @@ def start(filename):
     # TODO: Should eventually escape into an interactive selector.
     if not filename:
         click.echo(
-            f"{MAGNIFYING_GLASS} No filename provided. Please "
-            f"provide a filename (or multiple)."
+            f'{EXCLAMATION_MARK} No filename provided. Please '
+            f'provide a filename (or multiple).'
         )
         return
 
-    click.echo(f"{MAGNIFYING_GLASS} Extracting reStructuredText from {filename}.")
+    click.echo(f'{MAGNIFYING_GLASS} Extracting reStructuredText from {filename}.')
