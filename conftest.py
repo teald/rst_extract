@@ -71,6 +71,29 @@ def code_only_rst_result(test_file_dir) -> str:
     return '\n'.join(lines)
 
 
+@pytest.fixture
+def complex_code_block_rst(tmpdir, test_file_dir) -> str:
+    """Create an rst file with a complex code block."""
+    file_name = R'complex_code_block.rst'
+    source_path = join(test_file_dir, file_name)
+
+    temporary_file_path = join(tmpdir, file_name)
+
+    shutil.copy(source_path, temporary_file_path)
+
+    return temporary_file_path
+
+
+@pytest.fixture
+def complex_code_block_rst_result(test_file_dir) -> str:
+    """Get expected output from #~END~# in complex_code_block.rst."""
+    answer = extract_answer_from_rst_doc(join(test_file_dir, 'complex_code_block.rst'))
+
+    breakpoint(0)
+
+    return answer
+
+
 def _dedent_code_block(block: list[str]) -> list[str]:
     """Dedent the code block. Does not modify the original list."""
     # Get the minimum indent
