@@ -5,9 +5,51 @@
 import os
 import shutil
 from os.path import join
-from typing import Callable
 
 import pytest
+
+
+# TODO: Helpers should probably not be in conftest.py.
+class Helpers:
+    _instance = None
+
+    def __new__(cls) -> 'Helpers':
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+
+        return cls._instance
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def dedent_code_block(block: list[str]) -> list[str]:
+        """Dedent the code block. Does not modify the original list."""
+        # Get the minimum indent
+        min_indent = min(
+            len(line) - len(line.lstrip()) for line in block if line.strip()
+        )
+
+        return [line[min_indent:] for line in block]
+
+    @staticmethod
+    def extract_end_code_rst(file_path: str) -> str:
+        """Extract the end code from the rst file."""
+        with open(file_path, 'r') as f:
+            lines = f.readlines()
+
+        end_line = [line.strip() == R'#~END~#' for line in lines]
+
+        if sum(1 for result in end_line if result) > 1:
+            raise ValueError('Multiple end lines found.')
+
+        end_lines = lines[end_line.index(True) + 1 :]
+        end_lines = [line.rstrip() for line in end_lines]
+
+        # Dedent the code block to the minimum indent
+        end_lines = Helpers.dedent_code_block(end_lines)
+
+        return '\n'.join(end_lines)
 
 
 @pytest.fixture
@@ -30,6 +72,7 @@ def empty_rst(tmpdir) -> str:
 @pytest.fixture
 def code_only_rst(tmpdir, test_file_dir) -> str:
     """Create an rst file with only code."""
+    # This file does not contain an END line to extract for completeness.
     file_name = R'only_code.rst'
     source_path = join(test_file_dir, file_name)
 
@@ -85,44 +128,16 @@ def complex_code_block_rst(tmpdir, test_file_dir) -> str:
 
 
 @pytest.fixture
-def complex_code_block_rst_result(test_file_dir) -> str:
+def complex_code_block_rst_result(test_file_dir, helper_methods) -> str:
     """Get expected output from #~END~# in file_with_text_and_code.rst."""
-    answer = extract_answer_from_rst_doc(
+    answer = helper_methods.extract_end_code_rst(
         join(test_file_dir, 'file_with_text_and_code.rst')
     )
-
-    breakpoint(0)
 
     return answer
 
 
-def _dedent_code_block(block: list[str]) -> list[str]:
-    """Dedent the code block. Does not modify the original list."""
-    # Get the minimum indent
-    min_indent = min(len(line) - len(line.lstrip()) for line in block if line.strip())
-
-    return [line[min_indent:] for line in block]
-
-
-def _extract_end_code_rst(file_path: str) -> str:
-    """Extract the end code from the rst file."""
-    with open(file_path, 'r') as f:
-        lines = f.readlines()
-
-    end_line = [line.strip() == R'#~END~#' for line in lines]
-
-    if sum(1 for result in end_line if result) > 1:
-        raise ValueError('Multiple end lines found.')
-
-    end_lines = lines[end_line.index(True) + 1 :]
-
-    # Dedent the code block to the minimum indent
-    end_lines = _dedent_code_block(end_lines)
-
-    return '\n'.join(end_lines)
-
-
-@pytest.fixture(autouse=True)
-def extract_answer_from_rst_doc() -> Callable:
+@pytest.fixture
+def helper_methods() -> Helpers:
     """Extract the answer from the rst doc."""
-    return _extract_end_code_rst
+    return Helpers()
