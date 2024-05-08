@@ -16,10 +16,13 @@ rich = "^13.7.1"
 ruff = "^0.4.3"
 pre-commit = "^3.7.0"
 mypy = "^1.10.0"
+pydantic = "^2.7.1"
 
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.2.0"
+pydantic = "^2.7.1"
+hypothesis = "^6.100.5"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -75,8 +78,9 @@ target-version = "py38"
 # Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
 # Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
 # McCabe complexity (`C901`) by default.
-select = ["F", "E", "W", "C90", "I", "N", "D"]
-ignore = ["D203", "D213"]
+select = ["F", "E", "W", "C90", "I", "N"]
+extend-select = ["D400"]
+ignore = []
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
@@ -111,3 +115,16 @@ docstring-code-format = false
 # This only has an effect when the `docstring-code-format` setting is
 # enabled.
 docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint.pydocstyle]
+# Docstring strule convention
+convention = "numpy"
+
+[tool.mypy]
+plugins = [ "pydantic.mypy",]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
