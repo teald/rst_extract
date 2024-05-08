@@ -86,6 +86,7 @@ def code_only_rst(tmpdir, test_file_dir) -> str:
 @pytest.fixture
 def code_only_rst_result(test_file_dir) -> str:
     """Expected output of code_only_rst."""
+    # This file does not contain an END line to extract for completeness.
     with open(join(test_file_dir, 'only_code.rst'), 'r') as f:
         lines = f.readlines()
 
