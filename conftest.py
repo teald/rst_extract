@@ -74,7 +74,7 @@ def code_only_rst_result(test_file_dir) -> str:
 @pytest.fixture
 def complex_code_block_rst(tmpdir, test_file_dir) -> str:
     """Create an rst file with a complex code block."""
-    file_name = R'complex_code_block.rst'
+    file_name = R'file_with_text_and_code.rst'
     source_path = join(test_file_dir, file_name)
 
     temporary_file_path = join(tmpdir, file_name)
@@ -86,8 +86,10 @@ def complex_code_block_rst(tmpdir, test_file_dir) -> str:
 
 @pytest.fixture
 def complex_code_block_rst_result(test_file_dir) -> str:
-    """Get expected output from #~END~# in complex_code_block.rst."""
-    answer = extract_answer_from_rst_doc(join(test_file_dir, 'complex_code_block.rst'))
+    """Get expected output from #~END~# in file_with_text_and_code.rst."""
+    answer = extract_answer_from_rst_doc(
+        join(test_file_dir, 'file_with_text_and_code.rst')
+    )
 
     breakpoint(0)
 

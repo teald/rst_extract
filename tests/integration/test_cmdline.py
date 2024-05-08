@@ -45,3 +45,14 @@ def test_code_file(code_only_rst, capfd):
 
     out, err = capfd.readouterr()
     assert not err
+
+
+def test_complex_file(complex_code_block_rst, complex_code_block_rst_result, capfd):
+    """Test that a complex file does not raise an error."""
+    subprocess.run(
+        [sys.executable, '-m', 'rst_extract', str(complex_code_block_rst)],
+        check=True,
+    )
+
+    out, err = capfd.readouterr()
+    assert not err
