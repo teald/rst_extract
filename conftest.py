@@ -1,4 +1,6 @@
 """Pytest testing configuration."""
+# Ignore type hinting in mypy
+# mypy: ignore-errors
 
 import os
 import shutil
@@ -35,3 +37,12 @@ def code_only_rst(tmpdir, test_file_dir) -> str:
     shutil.copy(source_path, temporary_file_path)
 
     return temporary_file_path
+
+
+@pytest.fixture
+def code_only_rst_result(test_file_dir) -> str:
+    """Expected output of code_only_rst."""
+    with open(join(test_file_dir, 'only_code.rst'), 'r') as f:
+        return f.read()
+
+    raise NotImplementedError
