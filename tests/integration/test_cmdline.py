@@ -1,7 +1,11 @@
 """Tests for the command line interface for rst_extract."""
+# Ignore type hinting in mypy
+# mypy: ignore-errors
 
 import subprocess
 import sys
+
+import pytest
 
 
 def test_cmdline_help(capfd):
@@ -24,10 +28,13 @@ def test_cmdline_no_args(capfd):
 
 def test_empty_file(empty_rst, capfd):
     """Test that an empty file does not raise an error."""
-    subprocess.run([sys.executable, '-m', 'rst_extract', str(empty_rst)], check=True)
+    with pytest.raises(subprocess.CalledProcessError):
+        subprocess.run(
+            [sys.executable, '-m', 'rst_extract', str(empty_rst)], check=True
+        )
 
     out, err = capfd.readouterr()
-    assert 'empty file encountered' in out.lower()
+    assert 'empty file encountered' in err.lower()
 
 
 def test_code_file(code_only_rst, capfd):

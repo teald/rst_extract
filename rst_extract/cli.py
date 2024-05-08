@@ -6,7 +6,11 @@ To-do
 - Help text (--help)
 """
 
+import os
+
 import click
+
+from .extractor import Extractor
 
 MAGNIFYING_GLASS = '\U0001f50d'
 EXCLAMATION_MARK = '\U00002757'
@@ -18,7 +22,7 @@ EXCLAMATION_MARK = '\U00002757'
     nargs=-1,
     type=click.Path(exists=True),
 )
-def start(filename):
+def start(filename: list[os.PathLike[str]]) -> None:
     """Extract reStructuredText from Python files."""
     # TODO: Should eventually escape into an interactive selector.
     if not filename:
@@ -29,3 +33,12 @@ def start(filename):
         return
 
     click.echo(f'{MAGNIFYING_GLASS} Extracting reStructuredText from {filename}.')
+
+    # TODO: This should be managed by a class, not in start().
+    for file in filename:
+        click.echo(f'{MAGNIFYING_GLASS} Processing {file}...')
+
+        extractor = Extractor(file)
+        rst = extractor.extract()
+
+        click.echo(rst)

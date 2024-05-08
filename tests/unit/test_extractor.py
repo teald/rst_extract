@@ -32,7 +32,7 @@ def test_no_file_found():
     """Test the Extractor class when no file is found."""
     ext = Extractor('/nonexistent_dir/nonexistent_file.rst')
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(ExtractionError):
         ext.extract()
 
 

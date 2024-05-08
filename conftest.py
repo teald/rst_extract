@@ -43,6 +43,28 @@ def code_only_rst(tmpdir, test_file_dir) -> str:
 def code_only_rst_result(test_file_dir) -> str:
     """Expected output of code_only_rst."""
     with open(join(test_file_dir, 'only_code.rst'), 'r') as f:
-        return f.read()
+        lines = f.readlines()
 
-    raise NotImplementedError
+    # Remove first line (code block)
+    lines.pop(0)
+
+    # Remove whitespace on either side
+    for i, line in enumerate(lines):
+        if not line.strip():
+            lines[i] = ''
+
+    while lines[0] == '':
+        lines.pop(0)
+
+    while lines[-1] == '':
+        lines.pop(-1)
+
+    # Dedent the code block to the minimum indent
+    min_indent = min(len(line) - len(line.lstrip()) for line in lines if line)
+
+    # TODO: Declutter this fixture.
+    lines = [line[min_indent:] for line in lines]
+    lines = ['# Block 1:'] + [''] + lines
+    lines = [line.rstrip() for line in lines]
+
+    return '\n'.join(lines)
