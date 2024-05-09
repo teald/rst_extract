@@ -12,6 +12,7 @@ To-do
 - [ ] Implement a debug mode.
 - [ ] Implement a version flag.
 - [ ] Implement a flag to output to a file.
+    - [ ] Implement a flag to run the output directly.
 - [ ] Implement a flag to output log messages to a file.
 """
 
@@ -81,7 +82,17 @@ EXCLAMATION_MARK = '\U00002757'
     nargs=-1,
     type=click.Path(exists=True),
 )
-def start(filename: list[os.PathLike[str]]) -> None:
+@click.option(
+    '-o',
+    '--output',
+    default='./rst_extract_output.py',
+    type=click.Path(),
+    help='Output to a file. The output will be python code.',
+)
+def start(
+    filename: list[os.PathLike[str]],
+    output: os.PathLike[str],
+) -> None:
     """Extract reStructuredText from Python files."""
     # TODO: Should eventually escape into an interactive selector.
     if not filename:
@@ -109,5 +120,7 @@ def start(filename: list[os.PathLike[str]]) -> None:
         msg = f'{MAGNIFYING_GLASS} {file}'.ljust(80, '-')
         click.echo(msg)
         click.echo(result)
+
+    extractor.export_to_file(output)
 
     click.echo(f'{MAGNIFYING_GLASS} Done.'.ljust(80, '-'))

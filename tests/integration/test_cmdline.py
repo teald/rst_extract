@@ -1,4 +1,7 @@
-"""Tests for the command line interface for rst_extract."""
+"""Tests for the command line interface for rst_extract.
+
+- TODO: Implement tests that use click's testing utilities.
+"""
 # Ignore type hinting in mypy
 # mypy: ignore-errors
 
@@ -81,3 +84,32 @@ def test_diffent_langauges(
     assert not err
 
     assert different_languages_rst_result in out
+
+
+def test_output_file(
+    complex_code_block_rst,
+    complex_code_block_rst_result,
+    capfd,
+    tmp_path,
+):
+    """Test that a complex file does not raise an error."""
+    output_file = tmp_path / 'output.py'
+    subprocess.run(
+        [
+            sys.executable,
+            '-m',
+            'rst_extract',
+            str(complex_code_block_rst),
+            '-o',
+            str(output_file),
+        ],
+        check=True,
+    )
+
+    out, err = capfd.readouterr()
+    assert not err
+
+    assert complex_code_block_rst_result in out
+
+    with open(output_file, 'r') as f:
+        assert complex_code_block_rst_result in f.read()

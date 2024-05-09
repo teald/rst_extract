@@ -253,3 +253,18 @@ class Extractor:
         self._process_file()
 
         return self._extracted_code
+
+    def export_to_file(self, output: _FILE_TYPE) -> None:
+        """Export the extracted data to a file.
+
+        Arguments
+        ---------
+        output
+            The filename to output the extracted data to.
+        """
+        log.info('Exporting data to', output=output)
+
+        with open(output, 'w', encoding='utf-8') as file:
+            file.write(self._extracted_code)
+
+        log.info('Data exported', output=output)
