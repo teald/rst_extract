@@ -113,3 +113,25 @@ def test_output_file(
 
     with open(output_file, 'r') as f:
         assert complex_code_block_rst_result in f.read()
+
+
+def test_default_output_file(
+    complex_code_block_rst,
+    complex_code_block_rst_result,
+    capfd,
+    tmp_path,
+):
+    """Test that a complex file does not raise an error."""
+    output_file = tmp_path / 'rst_extract.output.py'
+    subprocess.run(
+        [sys.executable, '-m', 'rst_extract', str(complex_code_block_rst)],
+        check=True,
+    )
+
+    out, err = capfd.readouterr()
+    assert not err
+
+    assert complex_code_block_rst_result in out
+
+    with open(output_file, 'r') as f:
+        assert complex_code_block_rst_result in f.read()

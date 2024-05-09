@@ -85,7 +85,7 @@ EXCLAMATION_MARK = '\U00002757'
 @click.option(
     '-o',
     '--output',
-    default='./rst_extract_output.py',
+    default='./rst_extract.output.py',
     type=click.Path(),
     help='Output to a file. The output will be python code.',
 )
