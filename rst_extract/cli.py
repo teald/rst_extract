@@ -3,10 +3,12 @@
 To-do
 -----
 - [ ] Implement an interactive selector for multiple files.
-- [ ] Implement a flag for verbosity.
-    - [ ] -v for INFO
-    - [ ] -vv for DEBUG
-    - [ ] default to WARNING
+- [x] Implement a flag for verbosity.
+    - [x] -v for INFO
+    - [x] -vv for DEBUG
+    - [x] default to WARNING
+    - [ ] Make output handled with this, too, so there's not undesirable stdout
+          output without being requested.
 - [ ] Implement a debug mode.
 - [ ] Implement a version flag.
 - [ ] Implement a flag to output to a file.
@@ -23,16 +25,19 @@ from structlog.stdlib import LoggerFactory
 
 from .extractor import Extractor
 
-
-# TODO: Logging should eventually live in a separate file.
-@click.command()
-@click.option(
+_VERBOSE_OPTION = click.option(
     '-v',
     '--verbose',
+    default=0,
     type=int,
     count=True,
     help='Increase verbosity. Can be used multiple times. Maximum is DEBUG (-vvv).',
 )
+
+
+# TODO: Logging should eventually live in a separate file.
+@click.command()
+@_VERBOSE_OPTION
 def configure_logging(verbose: int) -> None:
     """Configure logging for rst_extract."""
     if not verbose:

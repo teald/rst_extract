@@ -25,7 +25,7 @@ class Extractor:
     _filename: _FILE_TYPE
     _data: str | None
 
-    _code_block_re = re.compile(r'^.. code-block::\s*(\w+)?\s*$', re.MULTILINE)
+    _code_block_re = re.compile(r'^.. code-block::\s*python\s*$', re.MULTILINE)
     _option_re = re.compile(r'^\s*:(\w+):\s*(.*)$', re.MULTILINE)
 
     def __init__(self, filename: _FILE_TYPE):
@@ -122,6 +122,11 @@ class Extractor:
         """Filter out the reStructuredText options from the code block."""
         return [line for line in block if not self._option_re.match(line)]
 
+    @staticmethod
+    def _get_indent_space_count(line: str) -> int:
+        """Get the number of spaces in the indent of the line."""
+        return len(line) - len(line.lstrip())
+
     def _get_next_code_block(self, lines: list[str]) -> list[str]:
         """Get the next code block from the lines. This just gets the next
         dedent and returns those strings as a list.
@@ -160,13 +165,13 @@ class Extractor:
 
         for i, line in enumerate(lines_iter):
             if min_indent is None and line.strip():
-                min_indent = len(line) - len(line.lstrip())
+                min_indent = self._get_indent_space_count(line)
 
             # Occurs if there is no content at the top of the code block.
             if min_indent is None:
                 continue
 
-            if line and len(line) - len(line.lstrip()) < min_indent:
+            if line and self._get_indent_space_count(line) < min_indent:
                 return self._dedent_code_block(lines[1:i])
 
         # The whole block is indented the same amount, assume the entire thing
@@ -178,9 +183,8 @@ class Extractor:
         """Dedent the code block. Does not modify the original list."""
         # Get the minimum indent
         # TODO: Could reimplement dedent with re.
-        min_indent = min(
-            len(line) - len(line.lstrip()) for line in block if line.strip()
-        )
+        get_indent_space_count = Extractor._get_indent_space_count
+        min_indent = min(get_indent_space_count(line) for line in block if line.strip())
 
         return [line[min_indent:] for line in block]
 

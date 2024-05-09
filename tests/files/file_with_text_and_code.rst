@@ -48,12 +48,12 @@ There's a final code block here, which has an option:
     Below this line is the expected output for this file.
     #~END~#
 
-    # Block 1
+    # Block 1:
     def some_function():
         # This is a comment
         return "This is a string"
 
-    # Block 2
+    # Block 2:
     def some_final_function():
         # This is a comment
         return "This is a string"

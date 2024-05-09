@@ -62,7 +62,22 @@ def test_complex_file(
     out, err = capfd.readouterr()
     assert not err
 
-    print(out)
-    print('########### VS ###########')
-    print(complex_code_block_rst_result)
     assert complex_code_block_rst_result in out
+
+
+def test_diffent_langauges(
+    different_languages_rst,
+    different_languages_rst_result,
+    capfd,
+    tmp_path,
+):
+    """Test that a file with different languages does not raise an error."""
+    subprocess.run(
+        [sys.executable, '-m', 'rst_extract', str(different_languages_rst)],
+        check=True,
+    )
+
+    out, err = capfd.readouterr()
+    assert not err
+
+    assert different_languages_rst_result in out

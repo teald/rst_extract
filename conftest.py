@@ -71,9 +71,9 @@ def test_file_dir() -> str:
 
 
 @pytest.fixture
-def empty_rst(tmpdir) -> str:
+def empty_rst(tmp_path) -> str:
     """Create an empty rst file."""
-    rst_file = join(tmpdir, 'empty.rst')
+    rst_file = join(tmp_path, 'empty.rst')
 
     with open(rst_file, 'w') as f:
         f.write('')
@@ -82,13 +82,13 @@ def empty_rst(tmpdir) -> str:
 
 
 @pytest.fixture
-def code_only_rst(tmpdir, test_file_dir) -> str:
+def code_only_rst(tmp_path, test_file_dir) -> str:
     """Create an rst file with only code."""
     # This file does not contain an END line to extract for completeness.
     file_name = R'only_code.rst'
     source_path = join(test_file_dir, file_name)
 
-    temporary_file_path = join(tmpdir, file_name)
+    temporary_file_path = join(tmp_path, file_name)
 
     shutil.copy(source_path, temporary_file_path)
 
@@ -121,19 +121,19 @@ def code_only_rst_result(test_file_dir) -> str:
 
     # TODO: Declutter this fixture.
     lines = [line[min_indent:] for line in lines]
-    lines = ['# Block 1:'] + [''] + lines + ['']
+    lines = ['# Block 1:'] + lines + ['']
     lines = [line.rstrip() for line in lines]
 
     return '\n'.join(lines)
 
 
 @pytest.fixture
-def complex_code_block_rst(tmpdir, test_file_dir) -> str:
+def complex_code_block_rst(tmp_path, test_file_dir) -> str:
     """Create an rst file with a complex code block."""
     file_name = R'file_with_text_and_code.rst'
     source_path = join(test_file_dir, file_name)
 
-    temporary_file_path = join(tmpdir, file_name)
+    temporary_file_path = join(tmp_path, file_name)
 
     shutil.copy(source_path, temporary_file_path)
 
@@ -154,3 +154,26 @@ def complex_code_block_rst_result(test_file_dir, helper_methods) -> str:
 def helper_methods() -> Helpers:
     """Extract the answer from the rst doc."""
     return Helpers()
+
+
+# TODO: Extract these sample file fixtures into a more
+#       general fixture that can be easily reused.
+@pytest.fixture
+def different_languages_rst(tmp_path, test_file_dir) -> os.PathLike[str]:
+    file_name = R'non_python_code.rst'
+    source_path = join(test_file_dir, file_name)
+
+    temporary_file_path = join(tmp_path, file_name)
+
+    shutil.copy(source_path, temporary_file_path)
+
+    return temporary_file_path
+
+
+@pytest.fixture
+def different_languages_rst_result(test_file_dir, helper_methods) -> str:
+    answer = helper_methods.extract_end_code_rst(
+        join(test_file_dir, R'non_python_code.rst')
+    )
+
+    return answer
