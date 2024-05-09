@@ -49,6 +49,18 @@ class Helpers:
         # Dedent the code block to the minimum indent
         end_lines = Helpers.dedent_code_block(end_lines)
 
+        # Remove whitespace on either side
+        for i, line in enumerate(end_lines):
+            if not line.strip():
+                end_lines[i] = ''
+
+        while end_lines[0] == '':
+            end_lines.pop(0)
+
+        # All but last bit of whitespace
+        while all(not line.strip() for line in end_lines[-2:]):
+            end_lines.pop(-1)
+
         return '\n'.join(end_lines)
 
 
@@ -109,7 +121,7 @@ def code_only_rst_result(test_file_dir) -> str:
 
     # TODO: Declutter this fixture.
     lines = [line[min_indent:] for line in lines]
-    lines = ['# Block 1:'] + [''] + lines
+    lines = ['# Block 1:'] + [''] + lines + ['']
     lines = [line.rstrip() for line in lines]
 
     return '\n'.join(lines)

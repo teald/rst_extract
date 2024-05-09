@@ -103,9 +103,9 @@ class Extractor:
         lines = rst_string.splitlines()
 
         # Get the lines where the code blocks start
-        start_lines = (
+        start_lines = [
             i for i, line in enumerate(lines) if self._code_block_re.match(line)
-        )
+        ]
 
         # TODO: This is just brute force implementation, could be cleaner.
         blocks_iter = (
@@ -114,6 +114,7 @@ class Extractor:
 
         # Consuming all above generators here.
         blocks = [self._filter_rst_options(block) for block in blocks_iter]
+        log.debug('Code blocks extracted', filename=self.filename)
 
         return blocks
 
@@ -145,7 +146,6 @@ class Extractor:
             ``.. code-block:: python``.
         """
         lines_iter = iter(lines)
-
         block_line = next(lines_iter)
 
         if not self._code_block_re.match(block_line):
@@ -159,11 +159,15 @@ class Extractor:
         min_indent = None
 
         for i, line in enumerate(lines_iter):
-            if min_indent is None:
+            if min_indent is None and line.strip():
                 min_indent = len(line) - len(line.lstrip())
 
-            if len(line) - len(line.lstrip()) < min_indent:
-                return self._dedent_code_block(lines[:i])
+            # Occurs if there is no content at the top of the code block.
+            if min_indent is None:
+                continue
+
+            if line and len(line) - len(line.lstrip()) < min_indent:
+                return self._dedent_code_block(lines[1:i])
 
         # The whole block is indented the same amount, assume the entire thing
         # is a code block.
@@ -186,25 +190,40 @@ class Extractor:
         return [line for line in block if line.strip()]
 
     @staticmethod
-    def _convert_to_list_with_block_numbers(blocks: list[list[str]]) -> list[str]:
+    def _trim_empty_lines(block: list[str]) -> list[str]:
+        """Trim empty lines from the end of the code block."""
+        while block and not block[0].strip():
+            block.pop(0)
+
+        while block and not block[-1].strip():
+            block.pop()
+
+        return block
+
+    @staticmethod
+    def _convert_to_list_with_block_numbers(
+        blocks: list[list[str]],
+    ) -> list[str]:
         """Convert the block to a list of tuples with line numbers."""
         all_lines = []
 
         # TODO: The start block label should be configurable.
         for i, block in enumerate(blocks, start=1):
             all_lines.append(f'# Block {i}:')
-            all_lines.extend(block)
+            all_lines.extend(Extractor._trim_empty_lines(block))
+
+            # The last line of the block should have a newline after it.
+            all_lines.append('')
+
+        while all_lines and all(not line.strip() for line in all_lines[-2:]):
+            all_lines.pop()
 
         return all_lines
 
     def _process_file(self) -> None:
-        """Process the file to extract data."""
+        """Process the data to extract data."""
         log.debug('Processing file', filename=self.filename)
-
         blocks = self._extract_code_blocks()
-
-        log.debug('Code blocks extracted', filename=self.filename)
-
         lines = self._convert_to_list_with_block_numbers(blocks)
 
         self._extracted_code = '\n'.join(lines)
@@ -224,9 +243,7 @@ class Extractor:
 
         except FileNotFoundError as error:
             log.error('File not found', filename=self.filename)
-
             msg = str(error)
-
             raise ExtractionError(msg) from error
 
         self._process_file()

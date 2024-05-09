@@ -1,6 +1,8 @@
 """Tests for the Extractor class."""
+
 # Ignore type hinting in mypy
 # mypy: ignore-errors
+from os.path import join
 
 import pytest
 from hypothesis import given
@@ -51,3 +53,85 @@ def test_extract_code_only_file(code_only_rst, code_only_rst_result):
     extracted = ext.extract()
 
     assert extracted == code_only_rst_result
+
+
+class _CodeBlockLiterals:
+    _literal1 = '.. code-block:: python\n    print("Hello, world!")\n'
+
+    _literal1_result = '# Block 1:\n' 'print("Hello, world!")\n'
+
+    _literal2 = (
+        '.. code-block:: python\n'
+        '    print("Hello, world!")\n'
+        '\n'
+        '    print("Goodbye, world!")\n'
+    )
+
+    _literal2_result = (
+        '# Block 1:\n' 'print("Hello, world!")\n' '\n' 'print("Goodbye, world!")\n'
+    )
+
+    _literal3 = (
+        '.. code-block:: python\n'
+        '    print("Hello, world!")\n'
+        '\n'
+        '    print("Goodbye, world!")\n'
+        '\n'
+    )
+
+    _literal3_result = (
+        '# Block 1:\n' 'print("Hello, world!")\n' '\n' 'print("Goodbye, world!")\n'
+    )
+
+    _literal4 = (
+        '.. code-block:: python\n'
+        '    print("Hello, world!")\n'
+        '\n'
+        '    print("Goodbye, world!")\n'
+        '\n'
+        '.. code-block:: python\n'
+        '    print("Hello, world!")\n'
+    )
+
+    _literal4_result = (
+        '# Block 1:\n'
+        'print("Hello, world!")\n'
+        '\n'
+        'print("Goodbye, world!")\n'
+        '\n'
+        '# Block 2:\n'
+        'print("Hello, world!")\n'
+    )
+
+    @classmethod
+    def literals(cls):
+        all_attrs = dir(cls)
+
+        prompt_result = [
+            (getattr(cls, attr), getattr(cls, f'{attr}_result'))
+            for attr in all_attrs
+            if attr.startswith('_literal') and not attr.endswith('_result')
+        ]
+
+        return [
+            (i, prompt, result)
+            for i, (prompt, result) in enumerate(prompt_result, start=1)
+        ]
+
+
+@pytest.mark.parametrize(
+    'number, prompt, result',
+    _CodeBlockLiterals.literals(),
+)
+def test_extract_code_blocks_literals(number, prompt, result, tmp_path):
+    """Test the Extractor class with code block literals."""
+    temp_file = join(tmp_path, f'literal{number}.rst')
+
+    with open(temp_file, 'w+') as f:
+        f.write(prompt)
+
+    ext = Extractor(temp_file)
+
+    extracted = ext.extract()
+
+    assert extracted == result
