@@ -3,8 +3,10 @@
 To-do
 -----
 - [ ] Implement an interactive selector for multiple files.
-- [ ] Implement a verbose mode.
-- [ ] Implement a quiet mode.
+- [ ] Implement a flag for verbosity.
+    - [ ] -v for INFO
+    - [ ] -vv for DEBUG
+    - [ ] default to WARNING
 - [ ] Implement a debug mode.
 - [ ] Implement a version flag.
 - [ ] Implement a flag to output to a file.
@@ -21,26 +23,47 @@ from structlog.stdlib import LoggerFactory
 
 from .extractor import Extractor
 
-logging.basicConfig(
-    format='%(message)s',
-    stream=sys.stdout,
-    level=logging.CRITICAL,
-)
 
-structlog.configure(
-    processors=[
-        structlog.processors.TimeStamper(fmt='iso'),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.UnicodeDecoder(),
-        structlog.processors.ExceptionPrettyPrinter(),
-        structlog.processors.JSONRenderer(),
-    ],
-    context_class=dict,
-    logger_factory=LoggerFactory(),
-    wrapper_class=structlog.BoundLogger,
-    cache_logger_on_first_use=True,
+# TODO: Logging should eventually live in a separate file.
+@click.command()
+@click.option(
+    '-v',
+    '--verbose',
+    type=int,
+    count=True,
+    help='Increase verbosity. Can be used multiple times. Maximum is DEBUG (-vvv).',
 )
+def configure_logging(verbose: int) -> None:
+    """Configure logging for rst_extract."""
+    if not verbose:
+        level = logging.WARNING
+
+    elif verbose == 1:
+        level = logging.INFO
+
+    elif verbose == 2:
+        level = logging.DEBUG
+
+    logging.basicConfig(
+        format='%(message)s',
+        stream=sys.stdout,
+        level=level,
+    )
+
+    structlog.configure(
+        processors=[
+            structlog.processors.TimeStamper(fmt='iso'),
+            structlog.processors.StackInfoRenderer(),
+            structlog.processors.format_exc_info,
+            structlog.processors.UnicodeDecoder(),
+            structlog.processors.ExceptionPrettyPrinter(),
+            structlog.processors.JSONRenderer(),
+        ],
+        context_class=dict,
+        logger_factory=LoggerFactory(),
+        wrapper_class=structlog.BoundLogger,
+        cache_logger_on_first_use=True,
+    )
 
 
 MAGNIFYING_GLASS = '\U0001f50d'
