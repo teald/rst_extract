@@ -11,9 +11,12 @@ To-do
           output without being requested.
 - [ ] Implement a debug mode.
 - [ ] Implement a version flag.
-- [ ] Implement a flag to output to a file.
-    - [ ] Implement a flag to run the output directly.
+- [x] Implement a flag to output to a file.
+    - [x] Implement a flag to run the output directly.
 - [ ] Implement a flag to output log messages to a file.
+- [ ] Implement better tracebacks for errors in executed code
+- [ ] Allow for output to be functions that are called.
+    - [ ] Explore options for passing/intuiting outputs etc.
 """
 
 import logging
