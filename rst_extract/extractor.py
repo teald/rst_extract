@@ -268,3 +268,11 @@ class Extractor:
         output.write(self._extracted_code)
 
         log.info('Data exported', output=output)
+
+    def execute(self) -> None:
+        """Extract the python code and execute it like a standalone file."""
+        log.info('Executing extracted code', filename=self.filename)
+
+        exec(self._extracted_code)
+
+        log.info('Code executed', filename=self.filename)

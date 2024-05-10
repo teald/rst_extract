@@ -113,3 +113,26 @@ def test_output_file(
 
     with open(output_file, 'r') as f:
         assert complex_code_block_rst_result in f.read()
+
+
+def test_execute_extraction(
+    hello_extract_rst,
+    hello_extract_rst_stdout,
+):
+    """Test that the extraction code works."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            '-m',
+            'rst_extract',
+            hello_extract_rst,
+            '--execute',
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert hello_extract_rst_stdout == result.stdout
+    assert not result.stderr
+    assert result.returncode == 0

@@ -177,3 +177,32 @@ def different_languages_rst_result(test_file_dir, helper_methods) -> str:
     )
 
     return answer
+
+
+@pytest.fixture
+def hello_extract_rst(tmp_path) -> os.PathLike[str]:
+    filename = R'hello.rst'
+    temporary_file_path = join(tmp_path, filename)
+
+    rst_string = (
+        'Hello, World!\n'
+        '\n'
+        '.. code-block:: python\n'
+        '\n'
+        '    print("Hello, World!")\n'
+        '\n'
+        '..\n'
+        '   #~END~#\n'
+        '\n'
+        '   print("Hello, World!")\n'
+    )
+
+    with open(temporary_file_path, 'w') as f:
+        f.write(rst_string)
+
+    return temporary_file_path
+
+
+@pytest.fixture
+def hello_extract_rst_stdout() -> str:
+    return 'Hello, World!\n'
