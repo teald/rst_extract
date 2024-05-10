@@ -4,7 +4,7 @@ It should be run as a module with the -m flag:
     python -m rst_extract
 
 The CLI is also accessible as a script:
-    rstextract
+    rst-extract
 
 Assuming installation has worked properly.
 """

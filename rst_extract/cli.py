@@ -19,6 +19,7 @@ To-do
 import logging
 import os
 import sys
+import typing
 
 import click
 import structlog
@@ -26,19 +27,11 @@ from structlog.stdlib import LoggerFactory
 
 from .extractor import Extractor
 
-_VERBOSE_OPTION = click.option(
-    '-v',
-    '--verbose',
-    default=0,
-    type=int,
-    count=True,
-    help='Increase verbosity. Can be used multiple times. Maximum is DEBUG (-vvv).',
-)
+MAGNIFYING_GLASS = '\U0001f50d'
+EXCLAMATION_MARK = '\U00002757'
 
 
 # TODO: Logging should eventually live in a separate file.
-@click.command()
-@_VERBOSE_OPTION
 def configure_logging(verbose: int) -> None:
     """Configure logging for rst_extract."""
     if not verbose:
@@ -72,10 +65,6 @@ def configure_logging(verbose: int) -> None:
     )
 
 
-MAGNIFYING_GLASS = '\U0001f50d'
-EXCLAMATION_MARK = '\U00002757'
-
-
 @click.command()
 @click.argument(
     'filename',
@@ -85,15 +74,27 @@ EXCLAMATION_MARK = '\U00002757'
 @click.option(
     '-o',
     '--output',
-    default='./rst_extract.output.py',
-    type=click.Path(),
+    type=click.File('w+'),
+    nargs=1,
+    show_default=True,
     help='Output to a file. The output will be python code.',
+)
+@click.option(
+    '-v',
+    '--verbose',
+    default=0,
+    type=int,
+    count=True,
+    help='Increase verbosity. Can be used multiple times. Maximum is DEBUG (-vvv).',
 )
 def start(
     filename: list[os.PathLike[str]],
-    output: os.PathLike[str],
+    output: typing.TextIO,
+    verbose: int,
 ) -> None:
     """Extract reStructuredText from Python files."""
+    configure_logging(verbose)
+
     # TODO: Should eventually escape into an interactive selector.
     if not filename:
         click.echo(
@@ -121,6 +122,7 @@ def start(
         click.echo(msg)
         click.echo(result)
 
-    extractor.export_to_file(output)
+    if output:
+        extractor.export_to_file(output)
 
     click.echo(f'{MAGNIFYING_GLASS} Done.'.ljust(80, '-'))
