@@ -5,6 +5,7 @@
 import os
 import shutil
 from os.path import join
+from pathlib import Path
 
 import pytest
 
@@ -67,7 +68,7 @@ class Helpers:
 @pytest.fixture
 def test_file_dir() -> str:
     """Return the directory of the test files."""
-    return join(os.path.dirname(__file__), 'tests/files')
+    return Path(__file__) / 'files'
 
 
 @pytest.fixture
