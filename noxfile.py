@@ -1,6 +1,8 @@
 # Ignore mypy for this file, for now
 # mypy: ignore-errors
 # TODO(teald): Add type hints to this file.
+# TODO(teald): Add build + build testing to noxfile.property
+# TODO(teald): Add publishing steps to noxfile
 import functools
 from typing import Literal
 
@@ -23,7 +25,6 @@ class TestSettings:
 # TODO: Override these in CI.
 nox.options.sessions = TestSettings.sessions
 nox.options.reuse_existing_virtualenvs = True
-nox.options.error_on_missing_interpreters = True
 nox.options.stop_on_first_error = True
 
 
@@ -83,24 +84,6 @@ def dependency_wrapper(func):
         return result
 
     return wrapper
-
-
-@nox.session
-def pre_test_clean(session):
-    session.run('rm', '-rf', '.coverage', 'htmlcov')
-    session.run(
-        'find',
-        '.',
-        '-type',
-        'd',
-        '-name',
-        '__pycache__',
-        '-exec',
-        'rm',
-        '-rf',
-        '{}',
-        '+',
-    )
 
 
 @nox.session(python=TestSettings.python)
