@@ -29,10 +29,17 @@ class Block(BaseModel):
     @field_validator('path')
     @classmethod
     def _convert_path(cls, value: FilePath | str) -> FilePath:
+        """Convert a string to a FilePath object."""
         if isinstance(value, str):
             return FilePath(value)
 
         return value
+
+    @field_validator('options')
+    @classmethod
+    def _convert_options(cls, value: Sequence[StrictStr]) -> tuple[StrictStr, ...]:
+        """Convert the sequence to a tuple, for consistency/immutability."""
+        return tuple(v for v in value)
 
     @staticmethod
     def from_string(string: StrictStr) -> 'Block':

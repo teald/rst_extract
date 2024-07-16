@@ -69,6 +69,7 @@ def install_test_dependencies(session):
     """Install the test dependencies from the poetry.lock file."""
     packages = get_poetry_dependencies(session, only='main,test')
     session.install(*packages)
+    session.install('-e', '.')
 
 
 def dependency_wrapper(func):

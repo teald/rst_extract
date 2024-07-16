@@ -68,7 +68,7 @@ class Helpers:
 @pytest.fixture
 def test_file_dir() -> str:
     """Return the directory of the test files."""
-    return Path(__file__) / 'files'
+    return Path(__file__).parent / 'files'
 
 
 @pytest.fixture
