@@ -82,6 +82,47 @@ def empty_rst(tmp_path) -> str:
 
 
 @pytest.fixture
+def code_block_hello_world_string() -> str:
+    """Return a code block string in rst."""
+    string = (
+        '.. code-block:: python',
+        '',
+        '    print("Hello, World!")',
+        '',
+    )
+
+    return '\n'.join(string)
+
+
+@pytest.fixture
+def code_block_hello_world_with_options_string() -> str:
+    """Return a code block string in rst with options."""
+    string = (
+        '.. code-block:: python',
+        '    :linenos:',
+        '',
+        '    print("Hello, World!")',
+        '',
+    )
+
+    return '\n'.join(string)
+
+
+@pytest.fixture
+def code_block_hello_world_with_directive_string() -> str:
+    """Return a code block string in rst with a directive."""
+    string = (
+        '.. code-block:: python',
+        '    :linenos:',
+        '',
+        '    print("Hello, World!")',
+        '',
+    )
+
+    return '\n'.join(string)
+
+
+@pytest.fixture
 def code_only_rst(tmp_path, test_file_dir) -> str:
     """Create an rst file with only code."""
     # This file does not contain an END line to extract for completeness.
