@@ -1,8 +1,7 @@
 """Code block with metadata about the original RST file."""
 
 import re
-from collections.abc import Collection
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, Sequence
 
 from pydantic import BaseModel, FilePath, StrictInt, StrictStr, field_validator
 
@@ -20,7 +19,7 @@ class Block(BaseModel):
 
     # RST-specific metadata
     directive: Optional[StrictStr] = None
-    options: Collection[StrictStr] = tuple()
+    options: Sequence[StrictStr] = tuple()
 
     # Regex patterns
     _directive_pattern: ClassVar[str] = r'\.\. ([\w\-]+)::'
@@ -28,7 +27,8 @@ class Block(BaseModel):
     _indent_pattern: ClassVar[str] = r'^(\s+)'
 
     @field_validator('path')
-    def _convert_path(self, value: FilePath | str) -> FilePath:
+    @classmethod
+    def _convert_path(cls, value: FilePath | str) -> FilePath:
         if isinstance(value, str):
             return FilePath(value)
 
