@@ -2,11 +2,13 @@
 
 - TODO: Implement tests that use click's testing utilities.
 """
+
 # Ignore type hinting in mypy
 # mypy: ignore-errors
-
+import glob
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -136,3 +138,71 @@ def test_execute_extraction(
     assert hello_extract_rst_stdout == result.stdout
     assert not result.stderr
     assert result.returncode == 0
+
+
+def test_execute_code_with_imported_decorators(
+    code_with_imported_decorators_rst,
+    code_with_imported_decorators_rst_stdout,
+):
+    """Test that the extraction code works."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            '-m',
+            'rst_extract',
+            code_with_imported_decorators_rst,
+            '--execute',
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert code_with_imported_decorators_rst_stdout == result.stdout
+    assert not result.stderr
+    assert result.returncode == 0
+
+
+def test_execute_code_with_imported_decorators_fail(
+    code_with_imported_decorators_rst,
+):
+    """Test that the extraction code works."""
+    with pytest.raises(subprocess.CalledProcessError):
+        subprocess.run(
+            [
+                sys.executable,
+                '-m',
+                'rst_extract',
+                code_with_imported_decorators_rst,
+                '--execute',
+                '--isolate-blocks',
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+
+# Run the command line tests over all test files -- just get them with glob for
+# now.
+_ALL_FILES = [Path(f) for f in glob.glob('tests/files/*.rst')]
+
+
+@pytest.mark.parametrize('test_file', _ALL_FILES)
+def run_cli_on_all_test_files(test_file):
+    """Run the command line tests on all test files."""
+    result = subprocess.run(
+        [
+            sys.executable,
+            '-m',
+            'rst_extract',
+            test_file,
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert not result.stderr
+    assert result.returncode == 0
+    assert result.stdout

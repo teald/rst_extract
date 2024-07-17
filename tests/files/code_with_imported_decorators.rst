@@ -7,15 +7,26 @@ decorators. For example,
 
     @my_decorator
     def my_function():
-        pass
+        return True
 
     @my_decorator
     def my_other_function():
-        pass
+        return True
 
     @my_decorator
     def my_final_function():
-        pass
+        return True
+
+    for func in [my_function, my_other_function, my_final_function]:
+        print(f"{func.__name__}() -> {func()}")
+        # For testing the wrapping occurred appropriately
+        print(
+            f"{func.__name__}.__wrapped__.__name__ -> "
+            f"{func.__wrapped__.__name__}"
+        )
+
+        assert func() is True
+
 
 These can also be applied to methods:
 
@@ -24,15 +35,30 @@ These can also be applied to methods:
     class MyClass:
         @my_decorator
         def my_method(self):
-            pass
+            return True
 
         @my_decorator
         def my_other_method(self):
-            pass
+            return True
 
         @my_decorator
         def my_final_method(self):
-            pass
+            return True
+
+    # Same testing as above
+    my_instance = MyClass()
+    for method in [
+        my_instance.my_method,
+        my_instance.my_other_method,
+        my_instance.my_final_method,
+    ]:
+        print(f"{method.__name__}() -> {method()}")
+        print(
+            f"{method.__name__}.__wrapped__.__name__ -> "
+            f"{method.__wrapped__.__name__}"
+        )
+
+        assert method() is True
 
 And finally, trying a new block importing one used by methods and functions:
 
@@ -42,12 +68,22 @@ And finally, trying a new block importing one used by methods and functions:
 
     @lru_cache
     def my_function():
-        pass
+        return True
 
     class MyClass:
         @lru_cache
         def my_method(self):
-            pass
+            return True
+
+    my_instance = MyClass()
+    for func in [my_function, my_instance.my_method]:
+        print(f"{func.__name__}() -> {func()}")
+        print(
+            f"{func.__name__}.__wrapped__.__name__ -> "
+            f"{func.__wrapped__.__name__}"
+        )
+
+        assert func() is True
 
 These should:
 

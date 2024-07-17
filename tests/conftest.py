@@ -138,6 +138,44 @@ def code_only_rst(tmp_path, test_file_dir) -> str:
 
 
 @pytest.fixture
+def code_with_imported_decorators_rst(tmp_path, test_file_dir) -> str:
+    """Create an rst file with only code."""
+    # This file does not contain an END line to extract for completeness.
+    file_name = R'code_with_imported_decorators.rst'
+    source_path = join(test_file_dir, file_name)
+
+    temporary_file_path = join(tmp_path, file_name)
+
+    shutil.copy(source_path, temporary_file_path)
+
+    return temporary_file_path
+
+
+@pytest.fixture
+def code_with_imported_decorators_rst_stdout() -> str:
+    output = (
+        'my_function() -> True',
+        'my_function.__wrapped__.__name__ -> my_function',
+        'my_other_function() -> True',
+        'my_other_function.__wrapped__.__name__ -> my_other_function',
+        'my_final_function() -> True',
+        'my_final_function.__wrapped__.__name__ -> my_final_function',
+        'my_method() -> True',
+        'my_method.__wrapped__.__name__ -> my_method',
+        'my_other_method() -> True',
+        'my_other_method.__wrapped__.__name__ -> my_other_method',
+        'my_final_method() -> True',
+        'my_final_method.__wrapped__.__name__ -> my_final_method',
+        'my_function() -> True',
+        'my_function.__wrapped__.__name__ -> my_function',
+        'my_method() -> True',
+        'my_method.__wrapped__.__name__ -> my_method ',
+    )
+
+    return '\n'.join(output)
+
+
+@pytest.fixture
 def code_only_rst_result(test_file_dir) -> str:
     """Expected output of code_only_rst."""
     # This file does not contain an END line to extract for completeness.
