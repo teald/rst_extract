@@ -31,6 +31,8 @@ MAGNIFYING_GLASS = '\U0001f50d'
 EXCLAMATION_MARK = '\U00002757'
 RUNNER_EMOJI = '\U0001f3c3'
 
+LOGGING_ENV_VAR = 'RST_EXTRACT_LOGGING'
+
 
 # TODO: Logging should eventually live in a separate file.
 def configure_logging(verbose: int) -> None:
@@ -43,6 +45,29 @@ def configure_logging(verbose: int) -> None:
 
     elif verbose == 2:
         level = logging.DEBUG
+
+    # Override the default logging configuration if environment variable is set.
+    if env_var_value := os.getenv(LOGGING_ENV_VAR):
+        env_var_value = env_var_value.lower()
+        if env_var_value in {'debug', '3'}:
+            level = logging.DEBUG
+
+        elif env_var_value in {'info', '2'}:
+            level = logging.INFO
+
+        elif env_var_value in {'warning', '1'}:
+            level = logging.WARNING
+
+        elif env_var_value in {'error', '0'}:
+            level = logging.ERROR
+
+        else:
+            logging.warning(
+                'Invalid value for environment variable %s: %s. '
+                'Defaulting to WARNING.',
+                LOGGING_ENV_VAR,
+                env_var_value,
+            )
 
     logging.basicConfig(
         format='%(message)s',
