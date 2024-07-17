@@ -7,9 +7,11 @@ converting them to reStructuredText.
 
 from . import cli, extractor
 from .extractor import Extractor
+from .validator import Validator
 
 __all__ = [
     'cli',
     'extractor',
     'Extractor',
+    'Validator',
 ]
