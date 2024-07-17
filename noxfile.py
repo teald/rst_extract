@@ -88,9 +88,12 @@ def dependency_wrapper(func):
 
 @nox.session(python=TestSettings.python)
 @dependency_wrapper
-def unit_tests(session):
+def unit_tests(session: nox.Session):
     session.install('pytest', 'pytest-cov')
-    session.run('pytest', 'tests/unit', '--cov-append', *session.posargs)
+    env_vars = {
+        'RST_LOGGING_LEVEL': 'DEBUG',
+    }
+    session.run('pytest', 'tests/unit', '--cov-append', *session.posargs, env=env_vars)
 
 
 @nox.session(python=TestSettings.python)
