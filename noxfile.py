@@ -4,6 +4,7 @@
 # TODO(teald): Add build + build testing to noxfile.property
 # TODO(teald): Add publishing steps to noxfile
 import functools
+import os
 from typing import Literal
 
 import nox
@@ -19,6 +20,8 @@ class TestSettings:
         'integration_tests',
         'coverage_report',
     ]
+
+    _LOGGING_LEVEL = os.getenv('RST_EXTRACT_LOGGING')
 
 
 # These settings are used for local development.
@@ -90,17 +93,26 @@ def dependency_wrapper(func):
 @dependency_wrapper
 def unit_tests(session: nox.Session):
     session.install('pytest', 'pytest-cov')
-    env_vars = {
-        'RST_LOGGING_LEVEL': 'DEBUG',
-    }
-    session.run('pytest', 'tests/unit', '--cov-append', *session.posargs, env=env_vars)
+    session.run(
+        'pytest',
+        'tests/unit',
+        '--cov-append',
+        *session.posargs,
+        env={'RST_EXTRACT_LOGGING': TestSettings._LOGGING_LEVEL},
+    )
 
 
 @nox.session(python=TestSettings.python)
 @dependency_wrapper
 def integration_tests(session):
     session.install('pytest', 'pytest-cov')
-    session.run('pytest', 'tests/integration', '--cov-append', *session.posargs)
+    session.run(
+        'pytest',
+        'tests/integration',
+        '--cov-append',
+        *session.posargs,
+        env={'RST_EXTRACT_LOGGING': TestSettings._LOGGING_LEVEL},
+    )
 
 
 @nox.session(python='3.12')
