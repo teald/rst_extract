@@ -9,15 +9,15 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 click = "^8.1.7"
-structlog = "^24.1.0"
-rich = "^13.7.1"
 coverage = {version = "^7.5.3", extras = ["toml"]}
+pydantic = "^2.7.1"
+rich = "^13.7.1"
+structlog = "^24.1.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.3"
 pre-commit = "^3.7.0"
 mypy = "^1.10.0"
-pydantic = "^2.7.1"
 
 
 [tool.poetry.group.test.dependencies]
