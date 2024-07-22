@@ -17,8 +17,10 @@ To-do
 """
 
 import os
+import subprocess
 import sys
 import typing
+from os import PathLike
 
 import click
 
@@ -30,6 +32,12 @@ EXCLAMATION_MARK = '\U00002757'
 RUNNER_EMOJI = '\U0001f3c3'
 
 LOGGING_ENV_VAR = 'RST_EXTRACT_LOGGING'
+
+
+def execute_command(python_bin: PathLike[str], code: str) -> None:
+    """Execute the extracted code."""
+    command = (python_bin, '-c', code)
+    _ = subprocess.run(command)
 
 
 @click.command()
@@ -59,11 +67,18 @@ LOGGING_ENV_VAR = 'RST_EXTRACT_LOGGING'
     is_flag=True,
     help='Execute the extracted code.',
 )
+@click.option(
+    '--python-bin',
+    type=click.Path(exists=True),
+    default=sys.executable,
+    help='Path to the Python binary to use for execution.',
+)
 def start(
     filename: list[os.PathLike[str]],
     output: typing.TextIO,
     verbose: int,
     execute: bool,
+    python_bin: os.PathLike[str],
 ) -> None:
     """Extract reStructuredText from Python files."""
     configure_logging(verbose)
@@ -81,14 +96,17 @@ def start(
         )
         return
 
-    click.echo(f'{MAGNIFYING_GLASS} Extracting reStructuredText from ', file=stdout_to)
+    click.echo(
+        f'{MAGNIFYING_GLASS} Extracting reStructuredText from ',
+        file=stdout_to,
+    )
     click.echo(
         '\n'.join(f'{i:6d}) {file}' for i, file in enumerate(filename, start=1)),
         file=stdout_to,
     )
 
     # TODO: This should be managed by a class, not in start().
-    results = {}
+    results: dict[PathLike[str], str] = {}
     for file in filename:
         click.echo(f'{MAGNIFYING_GLASS} Processing {file}...', file=stdout_to)
 
@@ -104,7 +122,7 @@ def start(
                 f'{MAGNIFYING_GLASS} Writing {file} to {output.name}...',
                 file=stdout_to,
             )
-            output.write(result)
+            _ = output.write(result)
 
     # TODO: Execution should be managed by a class, not in start().
     if not execute:
@@ -117,6 +135,6 @@ def start(
     if execute:
         for file, result in results.items():
             click.echo(f'{RUNNER_EMOJI} Executing {file}...', file=stdout_to)
-            exec(result)
+            execute_command(python_bin=python_bin, code=result)
 
     click.echo(f'{MAGNIFYING_GLASS} Done.'.ljust(80, '-'), file=stdout_to)

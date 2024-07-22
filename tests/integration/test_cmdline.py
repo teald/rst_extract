@@ -35,7 +35,8 @@ def test_empty_file(empty_rst, capfd):
     """Test that an empty file does not raise an error."""
     with pytest.raises(subprocess.CalledProcessError):
         subprocess.run(
-            [sys.executable, '-m', 'rst_extract', str(empty_rst)], check=True
+            [sys.executable, '-m', 'rst_extract', str(empty_rst)],
+            check=True,
         )
 
     out, err = capfd.readouterr()
@@ -45,7 +46,8 @@ def test_empty_file(empty_rst, capfd):
 def test_code_file(code_only_rst, capfd):
     """Test that a file with only code does not raise an error."""
     subprocess.run(
-        [sys.executable, '-m', 'rst_extract', str(code_only_rst)], check=True
+        [sys.executable, '-m', 'rst_extract', str(code_only_rst)],
+        check=True,
     )
 
     out, err = capfd.readouterr()
@@ -113,7 +115,7 @@ def test_output_file(
 
     assert complex_code_block_rst_result in out
 
-    with open(output_file, 'r') as f:
+    with open(output_file) as f:
         assert complex_code_block_rst_result in f.read()
 
 

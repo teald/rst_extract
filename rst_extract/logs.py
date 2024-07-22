@@ -63,3 +63,5 @@ def configure_logging(verbose: int) -> None:
         wrapper_class=structlog.BoundLogger,
         cache_logger_on_first_use=True,
     )
+
+    logging.info('Logging configured to %s.', logging.getLevelName(level))

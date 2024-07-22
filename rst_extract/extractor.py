@@ -17,8 +17,6 @@ _FILE_TYPE = str | os.PathLike[str]
 class ExtractionError(Exception):
     """Exception raised when an error occurs during extraction."""
 
-    pass
-
 
 class Extractor:
     """Extract data from reStructuredText files."""
@@ -64,11 +62,11 @@ class Extractor:
             (
                 isinstance(self.filename, str),
                 isinstance(self.filename, os.PathLike),
-            )
+            ),
         ):
             raise TypeError(
                 f'Expected filename to ahve type {_FILE_TYPE},'
-                f' but got {type(self.filename)} instead.'
+                f' but got {type(self.filename)} instead.',
             )
 
     def _load_file_contents(self) -> str:
@@ -78,7 +76,7 @@ class Extractor:
         read the contents into memory in full.
         """
         # TODO: Encoding should probably be configurable, just in case.
-        with open(self.filename, 'r', encoding='utf-8') as file:
+        with open(self.filename, encoding='utf-8') as file:
             data = file.read()
 
         self._data = data

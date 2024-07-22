@@ -36,7 +36,7 @@ class Helpers:
     @staticmethod
     def extract_end_code_rst(file_path: str) -> str:
         """Extract the end code from the rst file."""
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             lines = f.readlines()
 
         end_line = [line.strip() == R'#~END~#' for line in lines]
@@ -65,13 +65,13 @@ class Helpers:
         return '\n'.join(end_lines)
 
 
-@pytest.fixture
+@pytest.fixture()
 def test_file_dir() -> str:
     """Return the directory of the test files."""
     return Path(__file__).parent / 'files'
 
 
-@pytest.fixture
+@pytest.fixture()
 def empty_rst(tmp_path) -> str:
     """Create an empty rst file."""
     rst_file = join(tmp_path, 'empty.rst')
@@ -82,7 +82,7 @@ def empty_rst(tmp_path) -> str:
     return rst_file
 
 
-@pytest.fixture
+@pytest.fixture()
 def code_block_hello_world_string() -> str:
     """Return a code block string in rst."""
     string = (
@@ -95,7 +95,7 @@ def code_block_hello_world_string() -> str:
     return '\n'.join(string)
 
 
-@pytest.fixture
+@pytest.fixture()
 def code_block_hello_world_with_options_string() -> str:
     """Return a code block string in rst with options."""
     string = (
@@ -109,7 +109,7 @@ def code_block_hello_world_with_options_string() -> str:
     return '\n'.join(string)
 
 
-@pytest.fixture
+@pytest.fixture()
 def code_block_hello_world_with_directive_string() -> str:
     """Return a code block string in rst with a directive."""
     string = (
@@ -123,7 +123,7 @@ def code_block_hello_world_with_directive_string() -> str:
     return '\n'.join(string)
 
 
-@pytest.fixture
+@pytest.fixture()
 def code_only_rst(tmp_path, test_file_dir) -> str:
     """Create an rst file with only code."""
     # This file does not contain an END line to extract for completeness.
@@ -137,7 +137,7 @@ def code_only_rst(tmp_path, test_file_dir) -> str:
     return temporary_file_path
 
 
-@pytest.fixture
+@pytest.fixture()
 def code_with_imported_decorators_rst(tmp_path, test_file_dir) -> str:
     """Create an rst file with only code."""
     # This file does not contain an END line to extract for completeness.
@@ -151,7 +151,7 @@ def code_with_imported_decorators_rst(tmp_path, test_file_dir) -> str:
     return temporary_file_path
 
 
-@pytest.fixture
+@pytest.fixture()
 def code_with_imported_decorators_rst_stdout() -> str:
     output = (
         'my_function() -> True',
@@ -175,11 +175,11 @@ def code_with_imported_decorators_rst_stdout() -> str:
     return '\n'.join(output)
 
 
-@pytest.fixture
+@pytest.fixture()
 def code_only_rst_result(test_file_dir) -> str:
     """Expected output of code_only_rst."""
     # This file does not contain an END line to extract for completeness.
-    with open(join(test_file_dir, 'only_code.rst'), 'r') as f:
+    with open(join(test_file_dir, 'only_code.rst')) as f:
         lines = f.readlines()
 
     # Remove first line (code block)
@@ -207,7 +207,7 @@ def code_only_rst_result(test_file_dir) -> str:
     return '\n'.join(lines)
 
 
-@pytest.fixture
+@pytest.fixture()
 def complex_code_block_rst(tmp_path, test_file_dir) -> str:
     """Create an rst file with a complex code block."""
     file_name = R'file_with_text_and_code.rst'
@@ -220,17 +220,17 @@ def complex_code_block_rst(tmp_path, test_file_dir) -> str:
     return temporary_file_path
 
 
-@pytest.fixture
+@pytest.fixture()
 def complex_code_block_rst_result(test_file_dir, helper_methods) -> str:
     """Get expected output from #~END~# in file_with_text_and_code.rst."""
     answer = helper_methods.extract_end_code_rst(
-        join(test_file_dir, 'file_with_text_and_code.rst')
+        join(test_file_dir, 'file_with_text_and_code.rst'),
     )
 
     return answer
 
 
-@pytest.fixture
+@pytest.fixture()
 def helper_methods() -> Helpers:
     """Extract the answer from the rst doc."""
     return Helpers()
@@ -238,7 +238,7 @@ def helper_methods() -> Helpers:
 
 # TODO: Extract these sample file fixtures into a more
 #       general fixture that can be easily reused.
-@pytest.fixture
+@pytest.fixture()
 def different_languages_rst(tmp_path, test_file_dir) -> os.PathLike[str]:
     file_name = R'non_python_code.rst'
     source_path = join(test_file_dir, file_name)
@@ -250,16 +250,16 @@ def different_languages_rst(tmp_path, test_file_dir) -> os.PathLike[str]:
     return temporary_file_path
 
 
-@pytest.fixture
+@pytest.fixture()
 def different_languages_rst_result(test_file_dir, helper_methods) -> str:
     answer = helper_methods.extract_end_code_rst(
-        join(test_file_dir, R'non_python_code.rst')
+        join(test_file_dir, R'non_python_code.rst'),
     )
 
     return answer
 
 
-@pytest.fixture
+@pytest.fixture()
 def hello_extract_rst(tmp_path) -> os.PathLike[str]:
     filename = R'hello.rst'
     temporary_file_path = join(tmp_path, filename)
@@ -283,6 +283,6 @@ def hello_extract_rst(tmp_path) -> os.PathLike[str]:
     return temporary_file_path
 
 
-@pytest.fixture
+@pytest.fixture()
 def hello_extract_rst_stdout() -> str:
     return 'Hello, World!\n'

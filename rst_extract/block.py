@@ -9,8 +9,6 @@ from pydantic import BaseModel, FilePath, StrictInt, StrictStr, field_validator
 class BlockError(ValueError):
     """Error raised when a block is not properly formatted."""
 
-    pass
-
 
 class Block(BaseModel):
     code: list[StrictStr] = []
@@ -131,7 +129,8 @@ class Block(BaseModel):
 
     @staticmethod
     def _get_offset(
-        string: StrictStr, line_number: StrictInt = 0
+        string: StrictStr,
+        line_number: StrictInt = 0,
     ) -> dict[StrictInt, StrictInt]:
         """Get offset of the code block from the directive.
 
