@@ -13,55 +13,55 @@ from pathlib import Path
 import pytest
 
 
-def test_cmdline_help(capfd):
+def test_cmdline_help(capfd: pytest.CaptureFixture[str]):
     """Test that the command line help message works."""
-    subprocess.run([sys.executable, '-m', 'rst_extract', '--help'], check=True)
+    _ = subprocess.run([sys.executable, '-m', 'rst_extract', '--help'], check=True)
 
     out, err = capfd.readouterr()
     assert 'Extract reStructuredText from Python files'.lower() in out.lower()
     assert not err
 
 
-def test_cmdline_no_args(capfd):
+def test_cmdline_no_args(capfd: pytest.CaptureFixture[str]):
     """Test that the command line interface works with no arguments."""
-    subprocess.run([sys.executable, '-m', 'rst_extract'], check=True)
+    _ = subprocess.run([sys.executable, '-m', 'rst_extract'], check=True)
 
     out, err = capfd.readouterr()
     assert 'no filename provided' in out.lower()
     assert not err
 
 
-def test_empty_file(empty_rst, capfd):
+def test_empty_file(empty_rst: Path, capfd: pytest.CaptureFixture[str]):
     """Test that an empty file does not raise an error."""
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.run(
+        _ = subprocess.run(
             [sys.executable, '-m', 'rst_extract', str(empty_rst)],
             check=True,
         )
 
-    out, err = capfd.readouterr()
+    _, err = capfd.readouterr()
     assert 'empty file encountered' in err.lower()
 
 
-def test_code_file(code_only_rst, capfd):
+def test_code_file(code_only_rst: Path, capfd: pytest.CaptureFixture[str]):
     """Test that a file with only code does not raise an error."""
-    subprocess.run(
+    _ = subprocess.run(
         [sys.executable, '-m', 'rst_extract', str(code_only_rst)],
         check=True,
     )
 
-    out, err = capfd.readouterr()
+    _, err = capfd.readouterr()
     assert not err
 
 
 def test_complex_file(
-    complex_code_block_rst,
-    complex_code_block_rst_result,
-    capfd,
-    tmp_path,
+    complex_code_block_rst: Path,
+    complex_code_block_rst_result: str,
+    capfd: pytest.CaptureFixture[str],
+    tmp_path: Path,
 ):
     """Test that a complex file does not raise an error."""
-    subprocess.run(
+    _ = subprocess.run(
         [sys.executable, '-m', 'rst_extract', str(complex_code_block_rst)],
         check=True,
     )
@@ -73,13 +73,13 @@ def test_complex_file(
 
 
 def test_diffent_langauges(
-    different_languages_rst,
-    different_languages_rst_result,
-    capfd,
-    tmp_path,
+    different_languages_rst: Path,
+    different_languages_rst_result: str,
+    capfd: pytest.CaptureFixture[str],
+    tmp_path: Path,
 ):
     """Test that a file with different languages does not raise an error."""
-    subprocess.run(
+    _ = subprocess.run(
         [sys.executable, '-m', 'rst_extract', str(different_languages_rst)],
         check=True,
     )
@@ -91,14 +91,14 @@ def test_diffent_langauges(
 
 
 def test_output_file(
-    complex_code_block_rst,
-    complex_code_block_rst_result,
-    capfd,
-    tmp_path,
+    complex_code_block_rst: Path,
+    complex_code_block_rst_result: str,
+    capfd: pytest.CaptureFixture[str],
+    tmp_path: Path,
 ):
     """Test that a complex file does not raise an error."""
     output_file = tmp_path / 'output.py'
-    subprocess.run(
+    _ = subprocess.run(
         [
             sys.executable,
             '-m',
@@ -120,8 +120,8 @@ def test_output_file(
 
 
 def test_execute_extraction(
-    hello_extract_rst,
-    hello_extract_rst_stdout,
+    hello_extract_rst: Path,
+    hello_extract_rst_stdout: str,
 ):
     """Test that the extraction code works."""
     result = subprocess.run(
@@ -143,8 +143,8 @@ def test_execute_extraction(
 
 
 def test_execute_code_with_imported_decorators(
-    code_with_imported_decorators_rst,
-    code_with_imported_decorators_rst_stdout,
+    code_with_imported_decorators_rst: Path,
+    code_with_imported_decorators_rst_stdout: str,
 ):
     """Test that the extraction code works."""
     result = subprocess.run(
@@ -166,11 +166,11 @@ def test_execute_code_with_imported_decorators(
 
 
 def test_execute_code_with_imported_decorators_fail(
-    code_with_imported_decorators_rst,
+    code_with_imported_decorators_rst: Path,
 ):
     """Test that the extraction code works."""
     with pytest.raises(subprocess.CalledProcessError):
-        subprocess.run(
+        _ = subprocess.run(
             [
                 sys.executable,
                 '-m',
@@ -187,11 +187,11 @@ def test_execute_code_with_imported_decorators_fail(
 
 # Run the command line tests over all test files -- just get them with glob for
 # now.
-_ALL_FILES = [Path(f) for f in glob.glob('tests/files/*.rst')]
+_ALL_FILES: list[Path] = [Path(f) for f in glob.glob('tests/files/*.rst')]
 
 
 @pytest.mark.parametrize('test_file', _ALL_FILES)
-def run_cli_on_all_test_files(test_file):
+def run_cli_on_all_test_files(test_file: Path):
     """Run the command line tests on all test files."""
     result = subprocess.run(
         [
