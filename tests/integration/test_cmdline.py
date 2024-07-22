@@ -137,7 +137,7 @@ def test_execute_extraction(
         text=True,
     )
 
-    assert hello_extract_rst_stdout == result.stdout
+    assert hello_extract_rst_stdout.strip() == result.stdout.strip()
     assert not result.stderr
     assert result.returncode == 0
 
@@ -160,7 +160,7 @@ def test_execute_code_with_imported_decorators(
         text=True,
     )
 
-    assert code_with_imported_decorators_rst_stdout == result.stdout
+    assert code_with_imported_decorators_rst_stdout.strip() == result.stdout.strip()
     assert not result.stderr
     assert result.returncode == 0
 

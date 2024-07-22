@@ -30,6 +30,7 @@ from .logs import configure_logging
 MAGNIFYING_GLASS = '\U0001f50d'
 EXCLAMATION_MARK = '\U00002757'
 RUNNER_EMOJI = '\U0001f3c3'
+WARNING_EMOJI = '\U0001f494'
 
 LOGGING_ENV_VAR = 'RST_EXTRACT_LOGGING'
 
@@ -40,12 +41,11 @@ def execute_command(python_bin: PathLike[str], code: str) -> None:
     result = subprocess.run(command, capture_output=True)
 
     # Print the output of the command
-    click.echo(f'{RUNNER_EMOJI} Output:', file=sys.stdout)
     click.echo(result.stdout.decode('utf-8'), file=sys.stdout)
 
     # Also print stderr if there is any
     if result.stderr:
-        click.echo(f'{RUNNER_EMOJI} Error:', file=sys.stdout)
+        click.echo(f'{WARNING_EMOJI} Error! Details:', file=sys.stdout)
         click.echo(result.stderr.decode('utf-8'), file=sys.stdout)
 
 

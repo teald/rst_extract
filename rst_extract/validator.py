@@ -26,10 +26,10 @@ class Validator(BaseModel):
             return True
 
         except SyntaxError as err:
-            _exception = err
             logging.info(
                 'Got a syntax error while parsing code: %s("%s").',
                 err.__class__.__name__,
                 err.msg,
             )
+
             return False
