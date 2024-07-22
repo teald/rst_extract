@@ -37,7 +37,16 @@ LOGGING_ENV_VAR = 'RST_EXTRACT_LOGGING'
 def execute_command(python_bin: PathLike[str], code: str) -> None:
     """Execute the extracted code."""
     command = (python_bin, '-c', code)
-    _ = subprocess.run(command)
+    result = subprocess.run(command, capture_output=True)
+
+    # Print the output of the command
+    click.echo(f'{RUNNER_EMOJI} Output:', file=sys.stdout)
+    click.echo(result.stdout.decode('utf-8'), file=sys.stdout)
+
+    # Also print stderr if there is any
+    if result.stderr:
+        click.echo(f'{RUNNER_EMOJI} Error:', file=sys.stdout)
+        click.echo(result.stderr.decode('utf-8'), file=sys.stdout)
 
 
 @click.command()
@@ -69,6 +78,7 @@ def execute_command(python_bin: PathLike[str], code: str) -> None:
 )
 @click.option(
     '--python-bin',
+    nargs=1,
     type=click.Path(exists=True),
     default=sys.executable,
     help='Path to the Python binary to use for execution.',
