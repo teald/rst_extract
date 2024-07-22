@@ -26,7 +26,7 @@ class TestSettings:
     @classmethod
     def log_level(cls) -> str:
         """Get the logging level for the tests. Defaults to 'INFO'."""
-        return cls._LOGGING_LEVEL or 'INFO'
+        return cls._LOGGING_LEVEL or 'WARNING'
 
 
 # These settings are used for local development.
@@ -101,7 +101,6 @@ def dependency_wrapper(func: Callable[[nox.Session], None]):
 @nox.session(python=TestSettings.python)
 @dependency_wrapper
 def unit_tests(session: nox.Session):
-    session.install('pytest', 'pytest-cov')
     _ = session.run(
         'pytest',
         'tests/unit',
@@ -114,7 +113,6 @@ def unit_tests(session: nox.Session):
 @nox.session(python=TestSettings.python)
 @dependency_wrapper
 def integration_tests(session: nox.Session):
-    session.install('pytest', 'pytest-cov')
     _ = session.run(
         'pytest',
         'tests/integration',
