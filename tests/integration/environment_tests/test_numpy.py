@@ -11,6 +11,7 @@ environment, virtual environments will
 """
 
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -83,7 +84,7 @@ def test_numpy_code_in_isolated_venv(
     # Run the rst-extract command
     result = subprocess.run(
         [
-            'python',  # This is the python executable
+            sys.executable,
             '-m',
             'rst_extract',
             str(code_file),
