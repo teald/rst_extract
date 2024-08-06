@@ -5,6 +5,7 @@
 # TODO(teald): Add publishing steps to noxfile
 import functools
 import os
+from pathlib import Path
 from typing import Callable
 
 import nox
@@ -127,3 +128,32 @@ def coverage_report(session: nox.Session):
     session.install('coverage[toml]')
     _ = session.run('coverage', 'report')
     _ = session.run('coverage', 'html')
+
+
+@nox.session
+def devsh(session: nox.Session):
+    """Create a development .venv for the project."""
+    venv_path = Path('.venv')
+
+    if venv_path.exists():
+        session.log('Found existing .venv directory. Removing it.')
+        session.run('rm', '-rf', '.venv')
+
+    session.run('python', '-m', 'venv', str(venv_path.absolute()))
+    session.run(
+        'bash', '-c', 'source .venv/bin/activate && poetry install', external=True
+    )
+
+
+@nox.session(tags=['lint'])
+def format(session: nox.Session):
+    """Use ruff to format the code."""
+    session.install('ruff')
+    _ = session.run('ruff', 'format', '.')
+
+
+@nox.session(tags=['lint'])
+def check(session: nox.Session):
+    """Use ruff to check the code."""
+    session.install('ruff')
+    _ = session.run('ruff', 'check', '--fix')
