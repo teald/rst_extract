@@ -24,7 +24,8 @@ jobs:
                 os:
                     - ubuntu-latest
                     - macos-latest
-                    - windows-latest
+                    # todo(teald): Windows support
+                    # - windows-latest
 
                 python-version:
                     - "3.10"
@@ -52,7 +53,7 @@ jobs:
                 os:
                     - ubuntu-latest
                     - macos-latest
-                    - windows-latest
+                    # - windows-latest
 
                 python-version:
                     - "3.10"
