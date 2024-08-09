@@ -20,19 +20,32 @@ repos:
         - --branch=main
         - --pattern="release/*"
 
-
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
-    hooks:
-    -   id: mypy
-        additional_dependencies: [types-all, pydantic]
-
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ruff version.
-  rev: v0.4.3
+  rev: v0.4.2
   hooks:
     # Run the linter.
     - id: ruff
-
+      args: [ --fix ]
     # Run the formatter.
     - id: ruff-format
+      args:
+            - --line-length=79
+            - --exclude="""\.git |
+              \.__pycache__|
+              \.hg|
+              \.mypy_cache|
+              \.tox|
+              \.venv|
+              _build|
+              buck-out|
+              build|
+              dist|
+              docs"""
+
+- repo: https://github.com/compilerla/conventional-pre-commit
+  rev: v3.4.0
+  hooks:
+    - id: conventional-pre-commit
+      stages: [commit-msg]
+      args: []
