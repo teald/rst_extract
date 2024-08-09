@@ -38,13 +38,14 @@ nox.options.stop_on_first_error = True
 
 
 def get_poetry_dependencies(
-    session: nox.Session, only: list[str] | None = None
+    session: nox.Session,
+    only: list[str] | None = None,
 ):
     """Get the dependencies from the poetry.lock file.
 
     This assumes poetry is installed in the session.
 
-    Arguments
+    Arguments:
     ---------
     session : nox.sessions.Session
         The nox session object.
@@ -52,6 +53,7 @@ def get_poetry_dependencies(
     only : list, optional
         If provided, only return the dependencies that match the provided
         string or strings.
+
     """
     # "-T" includes top-level dependencies only.
     command = ['poetry', 'show']
