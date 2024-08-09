@@ -15,7 +15,7 @@ defaults:
 
 jobs:
     unit_tests:
-        name: "Testing on ${{ matrix.os }}"
+        name: "Unit: ${{ matrix.os }} -- Python ${{ matrix.python-version }}"
         runs-on: "${{ matrix.os }}"
 
         strategy:
@@ -43,7 +43,7 @@ jobs:
               run: nox -s unit_tests --python=${{ matrix.python-version }} -x -- -vv
 
     integration_tests:
-        name: "Testing on ${{ matrix.os }}"
+        name: "Integration: ${{ matrix.os }} -- Python ${{ matrix.python-version }}"
         runs-on: "${{ matrix.os }}"
 
         strategy:
