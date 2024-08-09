@@ -37,7 +37,9 @@ nox.options.reuse_existing_virtualenvs = True
 nox.options.stop_on_first_error = True
 
 
-def get_poetry_dependencies(session: nox.Session, only: list[str] | None = None):
+def get_poetry_dependencies(
+    session: nox.Session, only: list[str] | None = None
+):
     """Get the dependencies from the poetry.lock file.
 
     This assumes poetry is installed in the session.
@@ -73,7 +75,9 @@ def get_poetry_dependencies(session: nox.Session, only: list[str] | None = None)
 
     package_strs = out.splitlines()
     package_columns = [line.split() for line in package_strs]
-    packages = ['=='.join([column[0], column[1]]) for column in package_columns]
+    packages = [
+        '=='.join([column[0], column[1]]) for column in package_columns
+    ]
 
     # Log the packages that will be installed.
     session.log(f'Installing the following packages: {packages}')
@@ -137,11 +141,31 @@ def devsh(session: nox.Session):
 
     if venv_path.exists():
         session.log('Found existing .venv directory. Removing it.')
-        session.run('rm', '-rf', '.venv')
+        session.run('rm', '-rf', '.venv', external=True)
 
     session.run('python', '-m', 'venv', str(venv_path.absolute()))
     session.run(
-        'bash', '-c', 'source .venv/bin/activate && poetry install', external=True
+        'bash',
+        '-c',
+        'source .venv/bin/activate && poetry install',
+        external=True,
+    )
+
+    session.notify('pre_commit_init')
+
+
+@nox.session
+def pre_commit_init(session: nox.Session):
+    """Run pre-commit checks."""
+    session.install('pre-commit')
+    _ = session.run(
+        'pre-commit',
+        'install',
+        '--install-hooks',
+        '-t',
+        'pre-commit',
+        '-t',
+        'commit-msg',
     )
 
 
