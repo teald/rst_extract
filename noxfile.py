@@ -3,6 +3,8 @@
 # TODO(teald): Add type hints to this file.
 # TODO(teald): Add build + build testing to noxfile.property
 # TODO(teald): Add publishing steps to noxfile
+from __future__ import annotations
+
 import functools
 import os
 from pathlib import Path
