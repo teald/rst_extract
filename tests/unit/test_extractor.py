@@ -20,7 +20,7 @@ _NUMBER_ST = st.one_of(st.integers(), st.floats())
         st.tuples(),
         st.lists(_NUMBER_ST),
         st.dictionaries(st.one_of(st.text(), _NUMBER_ST), _NUMBER_ST),
-    )
+    ),
 )
 def test_extractor_bad_init(bad_filename):
     """Test the Extractor class initialization."""
@@ -58,7 +58,7 @@ def test_extract_code_only_file(code_only_rst, code_only_rst_result):
 class _CodeBlockLiterals:
     _literal1 = '.. code-block:: python\n    print("Hello, world!")\n'
 
-    _literal1_result = '# Block 1:\n' 'print("Hello, world!")\n'
+    _literal1_result = '# Block 1:\nprint("Hello, world!")\n'
 
     _literal2 = (
         '.. code-block:: python\n'
@@ -68,7 +68,7 @@ class _CodeBlockLiterals:
     )
 
     _literal2_result = (
-        '# Block 1:\n' 'print("Hello, world!")\n' '\n' 'print("Goodbye, world!")\n'
+        '# Block 1:\nprint("Hello, world!")\n\nprint("Goodbye, world!")\n'
     )
 
     _literal3 = (
@@ -80,7 +80,7 @@ class _CodeBlockLiterals:
     )
 
     _literal3_result = (
-        '# Block 1:\n' 'print("Hello, world!")\n' '\n' 'print("Goodbye, world!")\n'
+        '# Block 1:\nprint("Hello, world!")\n\nprint("Goodbye, world!")\n'
     )
 
     _literal4 = (

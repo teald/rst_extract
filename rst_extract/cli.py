@@ -16,54 +16,37 @@ To-do
 - [ ] Implement a flag to output log messages to a file.
 """
 
-import logging
 import os
+import subprocess
 import sys
 import typing
+from os import PathLike
 
 import click
-import structlog
-from structlog.stdlib import LoggerFactory
 
 from .extractor import Extractor
+from .logs import configure_logging
 
 MAGNIFYING_GLASS = '\U0001f50d'
 EXCLAMATION_MARK = '\U00002757'
 RUNNER_EMOJI = '\U0001f3c3'
+WARNING_EMOJI = '\U0001f494'
+
+LOGGING_ENV_VAR = 'RST_EXTRACT_LOGGING'
 
 
-# TODO: Logging should eventually live in a separate file.
-def configure_logging(verbose: int) -> None:
-    """Configure logging for rst_extract."""
-    if not verbose:
-        level = logging.WARNING
+def execute_command(python_bin: PathLike[str], code: str) -> None:
+    """Execute the extracted code."""
+    command = (python_bin, '-c', code)
+    result = subprocess.run(command, capture_output=True)
 
-    elif verbose == 1:
-        level = logging.INFO
+    # Print the output of the command
+    click.echo(result.stdout.decode('utf-8'), file=sys.stdout)
 
-    elif verbose == 2:
-        level = logging.DEBUG
-
-    logging.basicConfig(
-        format='%(message)s',
-        stream=sys.stdout,
-        level=level,
-    )
-
-    structlog.configure(
-        processors=[
-            structlog.processors.TimeStamper(fmt='iso'),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.processors.UnicodeDecoder(),
-            structlog.processors.ExceptionPrettyPrinter(),
-            structlog.processors.JSONRenderer(),
-        ],
-        context_class=dict,
-        logger_factory=LoggerFactory(),
-        wrapper_class=structlog.BoundLogger,
-        cache_logger_on_first_use=True,
-    )
+    # Also print stderr if there is any
+    if result.stderr:
+        click.echo(f'{WARNING_EMOJI} Error! Details:', file=sys.stdout)
+        click.echo(result.stderr.decode('utf-8'), file=sys.stdout)
 
 
 @click.command()
@@ -93,11 +76,19 @@ def configure_logging(verbose: int) -> None:
     is_flag=True,
     help='Execute the extracted code.',
 )
+@click.option(
+    '--python-bin',
+    nargs=1,
+    type=click.Path(exists=True),
+    default=sys.executable,
+    help='Path to the Python binary to use for execution.',
+)
 def start(
     filename: list[os.PathLike[str]],
     output: typing.TextIO,
     verbose: int,
     execute: bool,
+    python_bin: os.PathLike[str],
 ) -> None:
     """Extract reStructuredText from Python files."""
     configure_logging(verbose)
@@ -115,14 +106,17 @@ def start(
         )
         return
 
-    click.echo(f'{MAGNIFYING_GLASS} Extracting reStructuredText from ', file=stdout_to)
+    click.echo(
+        f'{MAGNIFYING_GLASS} Extracting reStructuredText from ',
+        file=stdout_to,
+    )
     click.echo(
         '\n'.join(f'{i:6d}) {file}' for i, file in enumerate(filename, start=1)),
         file=stdout_to,
     )
 
     # TODO: This should be managed by a class, not in start().
-    results = {}
+    results: dict[PathLike[str], str] = {}
     for file in filename:
         click.echo(f'{MAGNIFYING_GLASS} Processing {file}...', file=stdout_to)
 
@@ -138,7 +132,7 @@ def start(
                 f'{MAGNIFYING_GLASS} Writing {file} to {output.name}...',
                 file=stdout_to,
             )
-            output.write(result)
+            _ = output.write(result)
 
     # TODO: Execution should be managed by a class, not in start().
     if not execute:
@@ -151,6 +145,6 @@ def start(
     if execute:
         for file, result in results.items():
             click.echo(f'{RUNNER_EMOJI} Executing {file}...', file=stdout_to)
-            exec(result)
+            execute_command(python_bin=python_bin, code=result)
 
     click.echo(f'{MAGNIFYING_GLASS} Done.'.ljust(80, '-'), file=stdout_to)
