@@ -1,0 +1,71 @@
+name: "Build Testing"
+
+on:
+    push:
+        branches:
+        - main
+    pull_request:
+    schedule:
+        - cron: "20 1 * * mon"
+    workflow_dispatch:
+
+defaults:
+    run:
+        shell: bash -l {0} # Login shell for conda
+
+jobs:
+    unit_tests:
+        name: "Testing on ${{ matrix.os }}"
+        runs-on: "${{ matrix.os }}"
+
+        strategy:
+            fail-fast: false
+            matrix:
+                os:
+                    - ubuntu-latest
+                    - macos-latest
+                    - windows-latest
+
+                python-version:
+                    - "3.10"
+                    - "3.11"
+                    - "3.12"
+
+        steps:
+            - uses: "actions/checkout@v4"
+            - uses: excitedleigh/setup-nox@v2.0.0
+
+            - name: "Install and update pip"
+              run: |
+                  pip install --upgrade pip poetry
+
+            - name: "Unit tests"
+              run: nox -s unit_tests --python=${{ matrix.python-version }} -x -- -vv
+
+    integration_tests:
+        name: "Testing on ${{ matrix.os }}"
+        runs-on: "${{ matrix.os }}"
+
+        strategy:
+            fail-fast: false
+            matrix:
+                os:
+                    - ubuntu-latest
+                    - macos-latest
+                    - windows-latest
+
+                python-version:
+                    - "3.10"
+                    - "3.11"
+                    - "3.12"
+
+        steps:
+            - uses: "actions/checkout@v4"
+            - uses: excitedleigh/setup-nox@v2.0.0
+
+            - name: "Update pip"
+              run: |
+                  pip install --upgrade pip poetry
+
+            - name: "Integration tests"
+              run: nox -s integration_tests -x --python=${{ matrix.python-version }} -- -vv
