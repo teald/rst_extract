@@ -35,7 +35,9 @@ class Block(BaseModel):
 
     @field_validator('options')
     @classmethod
-    def _convert_options(cls, value: Sequence[StrictStr]) -> tuple[StrictStr, ...]:
+    def _convert_options(
+        cls, value: Sequence[StrictStr]
+    ) -> tuple[StrictStr, ...]:
         """Convert the sequence to a tuple, for consistency/immutability."""
         return tuple(v for v in value)
 
