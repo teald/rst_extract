@@ -111,7 +111,9 @@ def start(
         file=stdout_to,
     )
     click.echo(
-        '\n'.join(f'{i:6d}) {file}' for i, file in enumerate(filename, start=1)),
+        '\n'.join(
+            f'{i:6d}) {file}' for i, file in enumerate(filename, start=1)
+        ),
         file=stdout_to,
     )
 

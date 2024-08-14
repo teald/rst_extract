@@ -88,7 +88,9 @@ class Extractor:
 
         return self._data
 
-    def _extract_code_blocks(self, rst_string: str | None = None) -> list[list[str]]:
+    def _extract_code_blocks(
+        self, rst_string: str | None = None
+    ) -> list[list[str]]:
         """Extract code blocks from the reStructuredText string."""
         log.debug('Extracting code blocks from file', filename=self.filename)
 
@@ -103,12 +105,15 @@ class Extractor:
 
         # Get the lines where the code blocks start
         start_lines = [
-            i for i, line in enumerate(lines) if self._code_block_re.match(line)
+            i
+            for i, line in enumerate(lines)
+            if self._code_block_re.match(line)
         ]
 
         # TODO: This is just brute force implementation, could be cleaner.
         blocks_iter = (
-            self._get_next_code_block(lines[start_line:]) for start_line in start_lines
+            self._get_next_code_block(lines[start_line:])
+            for start_line in start_lines
         )
 
         # Consuming all above generators here.
@@ -183,7 +188,9 @@ class Extractor:
         # Get the minimum indent
         # TODO: Could reimplement dedent with re.
         get_indent_space_count = Extractor._get_indent_space_count
-        min_indent = min(get_indent_space_count(line) for line in block if line.strip())
+        min_indent = min(
+            get_indent_space_count(line) for line in block if line.strip()
+        )
 
         return [line[min_indent:] for line in block]
 
