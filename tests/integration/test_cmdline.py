@@ -15,7 +15,9 @@ import pytest
 
 def test_cmdline_help(capfd: pytest.CaptureFixture[str]):
     """Test that the command line help message works."""
-    _ = subprocess.run([sys.executable, '-m', 'rst_extract', '--help'], check=True)
+    _ = subprocess.run(
+        [sys.executable, '-m', 'rst_extract', '--help'], check=True
+    )
 
     out, err = capfd.readouterr()
     assert 'Extract reStructuredText from Python files'.lower() in out.lower()
@@ -72,7 +74,7 @@ def test_complex_file(
     assert complex_code_block_rst_result in out
 
 
-def test_diffent_langauges(
+def test_different_langauges(
     different_languages_rst: Path,
     different_languages_rst_result: str,
     capfd: pytest.CaptureFixture[str],
@@ -160,7 +162,10 @@ def test_execute_code_with_imported_decorators(
         text=True,
     )
 
-    assert code_with_imported_decorators_rst_stdout.strip() == result.stdout.strip()
+    assert (
+        code_with_imported_decorators_rst_stdout.strip()
+        == result.stdout.strip()
+    )
     assert not result.stderr
     assert result.returncode == 0
 
