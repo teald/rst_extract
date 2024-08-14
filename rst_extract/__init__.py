@@ -9,6 +9,7 @@ converting them to reStructuredText.
 import logging
 
 from . import cli, extractor
+from .api import extract
 from .extractor import Extractor
 from .logs import configure_logging
 from .validator import Validator
@@ -20,6 +21,7 @@ if not logging.getLogger().handlers:
 
 __all__ = [
     'cli',
+    'extract',
     'extractor',
     'Extractor',
     'Validator',
