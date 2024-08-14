@@ -63,6 +63,10 @@ def test_validator_invalid_code(bad_code: str) -> None:
     st.from_regex(r'^[a-zA-Z][a-zA-Z0-9]*$', fullmatch=True),
 )
 def test_validator_hypothesis_invalid_name(bad_code: str) -> None:
+    # Ignore some special Python keywords that are syntax errors on their own.
+    if bad_code in {'in', 'or', 'and'}:
+        return
+
     # These should *not* be caught as invalid Python code; this idea was
     # floated for a bit and discarded. NameErrors are caught at execution time.
     validator = Validator(code=bad_code)
