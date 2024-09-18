@@ -62,11 +62,11 @@ jobs:
 
         steps:
             - uses: "actions/checkout@v4"
-            - uses: excitedleigh/setup-nox@v2.0.0
+            - uses: excitedleigh/setup-nox@v2.1.0
 
             - name: "Update pip"
               run: |
-                  pip install --upgrade pip poetry
+                  pip install --upgrade pip poetry nox
 
             - name: "Integration tests"
               run: nox -s integration_tests -x --python=${{ matrix.python-version }} -- -vv
