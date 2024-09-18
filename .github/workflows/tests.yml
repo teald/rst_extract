@@ -34,7 +34,7 @@ jobs:
 
         steps:
             - uses: "actions/checkout@v4"
-            - uses: excitedleigh/setup-nox@v2.0.0
+            - uses: excitedleigh/setup-nox@v2.1.0
 
             - name: "Install and update pip"
               run: |
