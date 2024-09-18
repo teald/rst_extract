@@ -38,7 +38,7 @@ jobs:
 
             - name: "Install and update pip"
               run: |
-                  pip install --upgrade pip poetry
+                  pip install --upgrade pip poetry nox
 
             - name: "Unit tests"
               run: nox -s unit_tests --python=${{ matrix.python-version }} -x -- -vv
